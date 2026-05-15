@@ -360,7 +360,9 @@ void CN105Climate::getOperatingAndCompressorFreqFromResponsePacket() {
     receivedStatus.operating = data[4];
     // Some models (e.g. PAA/PUZ combo) seem to have some noise on the compressor frequency sensor, even when not in operation.
     // To avoid reporting random values, set the compressor frequency to 0 when the heatpump is not operating.
-    receivedStatus.compressorFrequency = (data[4]) ? (data[3] ? data[3] : data[6]) : 0;
+    bool isOperating = data[4] || data[5] || data[6];
+    receivedStatus.operating = isOperating;
+    receivedStatus.compressorFrequency = isOperating ? (data[3] ? data[3] : data[6]) : 0;
     receivedStatus.inputPower = convert_input_power_to_W(float((data[5] << 8) | data[6]));
     receivedStatus.kWh = convert_energy_usage_to_kWh(float((data[7] << 8) | data[8]));
 
